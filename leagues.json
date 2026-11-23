@@ -1,0 +1,553 @@
+[
+  {
+    "slug": "premier-league",
+    "name": "Premier League",
+    "country": "England",
+    "sport": "soccer",
+    "sport_label": "football (soccer)",
+    "code": "l30",
+    "coverage_key": "england--premier-league",
+    "ssa_url": "https://sportstatsapi.com/coverage/soccer/england/premier-league/",
+    "sport_url": "https://sportstatsapi.com/developers/free-football-api/",
+    "fixtures_dates": [
+      "2026-11-28",
+      "2026-12-01"
+    ],
+    "results_dates": [
+      "2026-11-20",
+      "2026-11-23"
+    ],
+    "intro": "Fixtures, results, live scores and the league table of the English Premier League as JSON. A match comes with its round (\"Week 11\"), venue, half-time and full-time score and the goals with the minute. Team names are plain strings, and every team and match has a short stable `code` you can store as your own key.",
+    "standings_intro": "The table is one list. Each row keeps the feed's attribute style: keys start with `@`, numbers come as strings, and `overall`, `home`, `away` and `total` hold the records.",
+    "standings_py": "for row in table[\"standings\"][\"tournament\"][\"team\"]:\n    print(row[\"@position\"], row[\"@name\"], row[\"total\"][\"@p\"], \"pts\")",
+    "standings_js": "for (const row of data.standings.tournament.team) {\n  console.log(row[\"@position\"], row[\"@name\"], row.total[\"@p\"], \"pts\");\n}",
+    "results_note": "A finished league match has `status` \"FT\" and `status_code` \"final\". `periods` holds the first-half score and the full-time score (`cumulative: true` means it is the score after 90 minutes, not the goals of the second half).",
+    "script": {
+      "file": "table_to_csv.py",
+      "title": "Premier League table to CSV",
+      "about": "Reads the current table (one request) and writes position, team, played, won, drawn, lost, goals for and against, goal difference, points and recent form as CSV. Open it in a spreadsheet or load it with pandas.",
+      "run": "python3 table_to_csv.py > premier-league-table.csv"
+    },
+    "sample_match": {
+      "code": "m907w",
+      "league_code": "l30",
+      "status": "FT",
+      "status_code": "final",
+      "start_at": "2026-11-22T16:30:00Z",
+      "round": "Week 11",
+      "home_team": {
+        "code": "tll3",
+        "name": "Liverpool",
+        "score": 4
+      },
+      "away_team": {
+        "code": "tllc",
+        "name": "Manchester Utd",
+        "score": 0
+      },
+      "periods": [
+        {
+          "period": "1",
+          "label": "1st half",
+          "home": 2,
+          "away": 0
+        },
+        {
+          "period": "FT",
+          "label": "Full time",
+          "home": 4,
+          "away": 0,
+          "cumulative": true
+        }
+      ],
+      "half_time_score": "[2-0]",
+      "full_time_score": "[4-0]"
+    },
+    "sample_standings": {
+      "@position": "1",
+      "@name": "Arsenal",
+      "@recent_form": "DWWWW",
+      "overall": {
+        "@gp": "11",
+        "@w": "9",
+        "@d": "1",
+        "@l": "1",
+        "@gs": "17",
+        "@ga": "7"
+      },
+      "total": {
+        "@gd": "10",
+        "@p": "28"
+      }
+    },
+    "coverage": {
+      "checked": "2026-11-23",
+      "history": {
+        "results_from": "2016-08-13",
+        "box_scores_from": "2026-04-10",
+        "play_by_play_from": null
+      }
+    }
+  },
+  {
+    "slug": "nba",
+    "name": "NBA",
+    "country": "USA",
+    "sport": "basketball",
+    "sport_label": "basketball",
+    "code": "l1jy",
+    "coverage_key": "basketball--usa--nba",
+    "ssa_url": "https://sportstatsapi.com/coverage/basketball/usa/nba/",
+    "sport_url": "https://sportstatsapi.com/developers/free-basketball-api/",
+    "fixtures_dates": [
+      "2026-11-25",
+      "2026-11-27"
+    ],
+    "results_dates": [
+      "2026-11-21",
+      "2026-11-23"
+    ],
+    "intro": "NBA games, final scores with quarter-by-quarter points, live scores and the standings by conference and division as JSON. Tip-off times are in UTC, so an evening game in New York shows up on the next UTC date: ask for a date range, not a single day, when you want one US night of games.",
+    "standings_intro": "Standings come as conferences, each with its divisions and their teams. A row has won, lost, games behind (`gb`), win percentage, home and road records, streak and the last 10 games.",
+    "standings_py": "for conf in table[\"standings\"][\"category\"][\"league\"]:\n    for div in conf[\"division\"]:\n        for row in div[\"team\"]:\n            print(conf[\"name\"], div[\"name\"], row[\"name\"], row[\"won\"], \"-\", row[\"lost\"])",
+    "standings_js": "for (const conf of data.standings.category.league) {\n  for (const div of conf.division) {\n    for (const row of div.team) console.log(div.name, row.name, `${row.won}-${row.lost}`);\n  }\n}",
+    "results_note": "A finished game has `status` \"Finished\" and `status_code` \"final\". `periods` lists Q1 to Q4; after overtime one OT entry holds every overtime together, so the periods always add up to the final score.",
+    "script": {
+      "file": "results_to_sqlite.py",
+      "title": "NBA results into SQLite",
+      "about": "Pulls the finished games of a date range (default: the last 3 days, UTC) and upserts them into a local SQLite file keyed by the match `code`, with the quarter scores as JSON. Run it every morning and the table grows into your own season log; running it twice never creates duplicates.",
+      "run": "python3 results_to_sqlite.py --from 2026-11-20 --to 2026-11-23 --db nba.sqlite"
+    },
+    "sample_match": {
+      "code": "moak0",
+      "league_code": "l1jy",
+      "status": "Finished",
+      "status_code": "final",
+      "start_at": "2026-11-22T00:30:00Z",
+      "home_team": {
+        "code": "tm5t",
+        "name": "New York Knicks",
+        "score": 97
+      },
+      "away_team": {
+        "code": "tmpi",
+        "name": "Portland Trail Blazers",
+        "score": 96
+      },
+      "periods": [
+        {
+          "period": "1",
+          "label": "Q1",
+          "home": 40,
+          "away": 23
+        },
+        {
+          "period": "2",
+          "label": "Q2",
+          "home": 26,
+          "away": 20
+        },
+        {
+          "period": "3",
+          "label": "Q3",
+          "home": 15,
+          "away": 29
+        },
+        {
+          "period": "4",
+          "label": "Q4",
+          "home": 16,
+          "away": 24
+        }
+      ]
+    },
+    "sample_standings": {
+      "league": [
+        {
+          "name": "Eastern Conference",
+          "division": [
+            {
+              "name": "Atlantic",
+              "team": [
+                {
+                  "position": "1",
+                  "name": "Philadelphia 76ers",
+                  "display_name": "Philadelphia 76ers",
+                  "won": "12",
+                  "lost": "3",
+                  "gb": "-",
+                  "percentage": ".800",
+                  "home_record": "6-2",
+                  "road_record": "6-1",
+                  "average_points_for": "114.1",
+                  "average_points_agains": "111.3",
+                  "difference": "+2.8",
+                  "streak": "W3",
+                  "last_10": "8-2",
+                  "code": "tm5p"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "coverage": {
+      "checked": "2026-11-23",
+      "history": {
+        "results_from": "2010-10-03",
+        "box_scores_from": "2017-10-01",
+        "play_by_play_from": "2025-01-01"
+      }
+    }
+  },
+  {
+    "slug": "nfl",
+    "name": "NFL",
+    "country": "USA",
+    "sport": "american-football",
+    "sport_label": "American football",
+    "code": "l53v",
+    "coverage_key": "american-football--usa--nfl",
+    "ssa_url": "https://sportstatsapi.com/coverage/american-football/usa/nfl/",
+    "sport_url": "https://sportstatsapi.com/developers/free-american-football-api/",
+    "fixtures_dates": [
+      "2026-11-26",
+      "2026-12-01"
+    ],
+    "results_dates": [
+      "2026-11-19",
+      "2026-11-24"
+    ],
+    "intro": "NFL schedule, final scores by quarter, live scores and the standings by conference and division as JSON. Match answers carry no week number, so a week of games is simply a date range: Thursday to the following Tuesday in UTC catches the Thursday, Sunday and Monday night games.",
+    "standings_intro": "Standings come as the two conferences, each with four divisions. A row has won, lost, ties, win percentage, home, road, division and conference records, points for and against and the streak.",
+    "standings_py": "for conf in table[\"standings\"][\"category\"][\"league\"]:\n    for div in conf[\"division\"]:\n        for row in div[\"team\"]:\n            print(div[\"name\"], row[\"name\"], row[\"won\"], row[\"lost\"], row[\"ties\"])",
+    "standings_js": "for (const conf of data.standings.category.league) {\n  for (const div of conf.division) {\n    for (const row of div.team) console.log(div.name, row.name, `${row.won}-${row.lost}-${row.ties}`);\n  }\n}",
+    "results_note": "A finished game has `status` \"Finished\" and `status_code` \"final\"; a game that went to overtime gets an OT entry in `periods`.",
+    "script": {
+      "file": "week_scores_json.py",
+      "title": "One NFL week of scores to JSON",
+      "about": "Fetches every finished game between two dates (default: the last 7 days, UTC) and writes a compact JSON file: teams, final score, quarter scores and kickoff time. Small enough to ship with a static site or a bot.",
+      "run": "python3 week_scores_json.py --from 2026-11-19 --to 2026-11-24 --out week.json"
+    },
+    "sample_match": {
+      "code": "mn17c",
+      "league_code": "l53v",
+      "status": "Finished",
+      "status_code": "final",
+      "start_at": "2026-11-20T01:15:00Z",
+      "home_team": {
+        "code": "t1025",
+        "name": "Houston Texans",
+        "score": 26
+      },
+      "away_team": {
+        "code": "t102d",
+        "name": "Indianapolis Colts",
+        "score": 3
+      },
+      "periods": [
+        {
+          "period": "1",
+          "label": "Q1",
+          "home": 7,
+          "away": 3
+        },
+        {
+          "period": "2",
+          "label": "Q2",
+          "home": 10,
+          "away": 0
+        },
+        {
+          "period": "3",
+          "label": "Q3",
+          "home": 9,
+          "away": 0
+        },
+        {
+          "period": "4",
+          "label": "Q4",
+          "home": 0,
+          "away": 0
+        }
+      ]
+    },
+    "sample_standings": {
+      "league": [
+        {
+          "name": "American Football Conference",
+          "division": [
+            {
+              "name": "AFC East",
+              "team": [
+                {
+                  "position": "1",
+                  "name": "Buffalo Bills",
+                  "display_name": "Buffalo Bills",
+                  "won": "8",
+                  "lost": "1",
+                  "ties": "0",
+                  "win_percentage": ".889",
+                  "home_record": "3-1",
+                  "road_record": "5-0",
+                  "division_record": "1-1",
+                  "conference_record": "5-1",
+                  "points_for": "287",
+                  "points_against": "199",
+                  "difference": "+88",
+                  "streak": "W5",
+                  "code": "t101x"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "coverage": {
+      "checked": "2026-11-23",
+      "history": {
+        "results_from": "2016-09-09",
+        "box_scores_from": "2016-09-11",
+        "play_by_play_from": "2016-09-09"
+      }
+    }
+  },
+  {
+    "slug": "nhl",
+    "name": "NHL",
+    "country": "USA",
+    "sport": "hockey",
+    "sport_label": "ice hockey",
+    "code": "l49f",
+    "coverage_key": "hockey--usa--nhl",
+    "ssa_url": "https://sportstatsapi.com/coverage/hockey/usa/nhl/",
+    "sport_url": "https://sportstatsapi.com/developers/free-ice-hockey-api/",
+    "fixtures_dates": [
+      "2026-11-24",
+      "2026-11-26"
+    ],
+    "results_dates": [
+      "2026-11-20",
+      "2026-11-22"
+    ],
+    "intro": "NHL games, final scores by period, overtime and shootout results, live scores and the standings by conference and division as JSON. Shootout games are easy to spot: they have their own `status_code`, so you can count regulation, overtime and shootout wins without parsing text.",
+    "standings_intro": "Standings come as conferences, each with its divisions. A row has games played, won, lost, overtime losses, points, regulation-plus-overtime wins, shootout wins and losses, home and road records, goals for and against, last ten and streak.",
+    "standings_py": "for conf in table[\"standings\"][\"category\"][\"league\"]:\n    for div in conf[\"division\"]:\n        for row in div[\"team\"]:\n            print(div[\"name\"], row[\"name\"], row[\"points\"], \"pts\")",
+    "standings_js": "for (const conf of data.standings.category.league) {\n  for (const div of conf.division) {\n    for (const row of div.team) console.log(div.name, row.name, row.points, \"pts\");\n  }\n}",
+    "results_note": "`status_code` tells how a game ended: \"final\" (regulation), \"final_overtime\" or \"final_penalties\" (shootout). `periods` lists P1 to P3, then OT and SO when they were played. Take the final score from `home_team.score` and `away_team.score`: in a shootout game the SO entry may be the shootout tally, so the periods do not always add up to the final.",
+    "script": {
+      "file": "results_ot_so_csv.py",
+      "title": "NHL results with OT and shootouts to CSV",
+      "about": "Writes the finished games of a date range (default: the last 3 days, UTC) as CSV with one column that says how each game was decided: REG, OT or SO, plus the period scores. A summary line on stderr counts each kind.",
+      "run": "python3 results_ot_so_csv.py --from 2026-11-20 --to 2026-11-22 > nhl-results.csv"
+    },
+    "sample_match": {
+      "code": "mo2l1",
+      "league_code": "l49f",
+      "status": "After Penalties",
+      "status_code": "final_penalties",
+      "start_at": "2026-11-20T00:00:00Z",
+      "home_team": {
+        "code": "tt3y",
+        "name": "Toronto Maple Leafs",
+        "score": 3
+      },
+      "away_team": {
+        "code": "tt4m",
+        "name": "Los Angeles Kings",
+        "score": 4
+      },
+      "periods": [
+        {
+          "period": "1",
+          "label": "P1",
+          "home": 2,
+          "away": 0
+        },
+        {
+          "period": "2",
+          "label": "P2",
+          "home": 1,
+          "away": 3
+        },
+        {
+          "period": "3",
+          "label": "P3",
+          "home": 0,
+          "away": 0
+        },
+        {
+          "period": "OT",
+          "label": "OT",
+          "home": 0,
+          "away": 0
+        },
+        {
+          "period": "SO",
+          "label": "SO",
+          "home": 0,
+          "away": 1
+        }
+      ]
+    },
+    "sample_standings": {
+      "league": [
+        {
+          "name": "Eastern Conference",
+          "division": [
+            {
+              "name": "Atlantic Division",
+              "team": [
+                {
+                  "position": "1",
+                  "name": "Ottawa Senators",
+                  "display_name": "Ottawa Senators",
+                  "games_played": "24",
+                  "won": "15",
+                  "lost": "6",
+                  "ot_losses": "3",
+                  "points": "33",
+                  "regular_ot_wins": "13",
+                  "shootout_wins": "2",
+                  "shootout_losses": "0",
+                  "home_record": "8-2-2",
+                  "road_record": "7-4-1",
+                  "goals_for": "79",
+                  "goals_against": "70",
+                  "difference": "+9",
+                  "last_ten": "7-1-2, 0 PTS",
+                  "streak": "W1",
+                  "code": "tt4x"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "coverage": {
+      "checked": "2026-11-23",
+      "history": {
+        "results_from": "2016-10-12",
+        "box_scores_from": "2016-10-15",
+        "play_by_play_from": "2016-10-12"
+      }
+    }
+  },
+  {
+    "slug": "khl",
+    "name": "KHL",
+    "country": "Russia",
+    "sport": "hockey",
+    "sport_label": "ice hockey",
+    "code": "l49c",
+    "coverage_key": "hockey--russia--khl",
+    "ssa_url": "https://sportstatsapi.com/coverage/hockey/russia/khl/",
+    "sport_url": "https://sportstatsapi.com/developers/free-ice-hockey-api/",
+    "fixtures_dates": [
+      "2026-11-24",
+      "2026-11-26"
+    ],
+    "results_dates": [
+      "2026-11-20",
+      "2026-11-22"
+    ],
+    "intro": "Kontinental Hockey League games, final scores by period, overtime and shootout results, live scores and the standings as JSON, with the same request shape as the NHL. The league spans many time zones, so read `start_at` (UTC) and convert it to the time zone you show.",
+    "standings_intro": "The table is one list of groups: the two conferences first, then the four divisions, each with its teams. A row has position (`pos`), games played (`gp`), points (`pts`), the result columns `w`, `wo`, `l` and `lo`, goals in `points_for` and `points_against`, and a playoff note in `description`.",
+    "standings_py": "for group in table[\"standings\"][\"category\"][\"league\"]:\n    for row in group[\"team\"]:\n        print(group[\"name\"], row[\"pos\"], row[\"name\"], row[\"pts\"], \"pts\")",
+    "standings_js": "for (const group of data.standings.category.league) {\n  for (const row of group.team) console.log(group.name, row.pos, row.name, row.pts, \"pts\");\n}",
+    "results_note": "`status_code` tells how a game ended: \"final\" (regulation), \"final_overtime\" or \"final_penalties\" (shootout). `periods` lists P1 to P3, then OT and SO when they were played. Take the final score from `home_team.score` and `away_team.score`: in a shootout game the SO entry may be the shootout tally, so the periods do not always add up to the final.",
+    "script": {
+      "file": "results_ot_so_csv.py",
+      "title": "KHL results with OT and shootouts to CSV",
+      "about": "Writes the finished KHL games of a date range (default: the last 3 days, UTC) as CSV with how each game was decided (REG, OT or SO) and the period scores. It is the NHL script with another league code: change `LEAGUE` to use it for any hockey league.",
+      "run": "python3 results_ot_so_csv.py --from 2026-11-20 --to 2026-11-22 > khl-results.csv"
+    },
+    "sample_match": {
+      "code": "mo07p",
+      "league_code": "l49c",
+      "status": "After Penalties",
+      "status_code": "final_penalties",
+      "start_at": "2026-11-20T16:00:00Z",
+      "home_team": {
+        "code": "tt9z",
+        "name": "Cherepovets",
+        "score": 3
+      },
+      "away_team": {
+        "code": "tt3c",
+        "name": "Khabarovsk",
+        "score": 2
+      },
+      "periods": [
+        {
+          "period": "1",
+          "label": "P1",
+          "home": 1,
+          "away": 1
+        },
+        {
+          "period": "2",
+          "label": "P2",
+          "home": 0,
+          "away": 1
+        },
+        {
+          "period": "3",
+          "label": "P3",
+          "home": 1,
+          "away": 0
+        },
+        {
+          "period": "OT",
+          "label": "OT",
+          "home": 0,
+          "away": 0
+        },
+        {
+          "period": "SO",
+          "label": "SO",
+          "home": 2,
+          "away": 1
+        }
+      ]
+    },
+    "sample_standings": {
+      "league": [
+        {
+          "name": "Western Conference",
+          "team": [
+            {
+              "description": {
+                "value": "Promotion - KHL (Play Offs: 1/8-finals)"
+              },
+              "gp": "29",
+              "code": "tt2v",
+              "l": "6",
+              "lo": "2",
+              "name": "CSKA Moscow",
+              "display_name": "CSKA Moscow",
+              "points_against": "53",
+              "points_for": "94",
+              "pos": "1",
+              "pts": "44",
+              "recent_form": "",
+              "w": "18",
+              "wo": "3"
+            }
+          ]
+        }
+      ]
+    },
+    "coverage": {
+      "checked": "2026-11-23",
+      "history": {
+        "results_from": "2026-04-02",
+        "box_scores_from": "2026-09-05",
+        "play_by_play_from": null
+      }
+    }
+  }
+]

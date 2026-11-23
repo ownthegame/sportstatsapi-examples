@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SportStatsAPI examples – sports data API code for Python, JavaScript and curl</title>
+<meta name="description" content="Free code examples for a sports data API: Premier League, NBA, NFL, NHL and KHL fixtures, results, live scores and standings as JSON in curl, Python and JavaScript.">
+<link rel="canonical" href="https://ownthegame.github.io/sportstatsapi-examples/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SportStatsAPI examples">
+<meta property="og:title" content="SportStatsAPI examples – sports data API code for Python, JavaScript and curl">
+<meta property="og:description" content="Free code examples for a sports data API: Premier League, NBA, NFL, NHL and KHL fixtures, results, live scores and standings as JSON in curl, Python and JavaScript.">
+<meta property="og:url" content="https://ownthegame.github.io/sportstatsapi-examples/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><nav><a href="./">SportStatsAPI examples</a><span class="sp"></span><a href="https://sportstatsapi.com/docs/api/">API docs</a><a href="https://sportstatsapi.com/pricing/">Pricing</a><a class="btn" href="https://account.sportstatsapi.com/signup">Get a free key</a></nav></header>
+<main>
+<h1>SportStatsAPI examples – sports data API code for Python, JavaScript and curl</h1>
+<p>Copy-paste code for the <a href="https://sportstatsapi.com/">SportStatsAPI</a> sports data API: fixtures, results, live scores and standings for popular leagues in curl, Python and JavaScript, plus one small runnable script per league. All examples work with a free key.</p>
+<h2 id="leagues">Leagues</h2>
+<ul><li><a href="premier-league/">Premier League API examples</a>: football (soccer), England, league code <code>l30</code>, script: Premier League table to CSV</li><li><a href="nba/">NBA API examples</a>: basketball, USA, league code <code>l1jy</code>, script: NBA results into SQLite</li><li><a href="nfl/">NFL API examples</a>: American football, USA, league code <code>l53v</code>, script: One NFL week of scores to JSON</li><li><a href="nhl/">NHL API examples</a>: ice hockey, USA, league code <code>l49f</code>, script: NHL results with OT and shootouts to CSV</li><li><a href="khl/">KHL API examples</a>: ice hockey, Russia, league code <code>l49c</code>, script: KHL results with OT and shootouts to CSV</li></ul>
+<h2 id="quick-start">Quick start</h2>
+<ul><li><a href="https://account.sportstatsapi.com/signup">Create a free account</a> and confirm the e-mail link. Your key starts with <code>sk_live_</code> and is shown once.</li><li>Put it in an environment variable: <code>export SSA_API_KEY=sk_live_...</code></li><li>Send it as a bearer token. Every call is a GET under <code>https://api.sportstatsapi.com/api/v1</code>.</li></ul>
+<figure class="code"><figcaption>curl: today&#x27;s live hockey scores</figcaption><pre><code class="language-bash">curl -s &quot;https://api.sportstatsapi.com/api/v1/hockey/matches/live&quot; \
+  -H &quot;Authorization: Bearer $SSA_API_KEY&quot;</code></pre></figure>
+<p>Find any league's code without a key: <code>/coverage/{sport}/{league}</code> takes our code or the competition key.</p>
+<figure class="code"><figcaption>curl (no key)</figcaption><pre><code class="language-bash">curl -s https://api.sportstatsapi.com/api/v1/coverage/soccer/england--premier-league</code></pre></figure>
+<p>Then run a script, for example the Premier League table to CSV:</p>
+<figure class="code"><figcaption>Run</figcaption><pre><code class="language-bash">git clone https://github.com/ownthegame/sportstatsapi-examples
+cd sportstatsapi-examples/examples/premier-league
+python3 table_to_csv.py &gt; table.csv</code></pre></figure>
+<aside class="tip"><strong>Free plan limits.</strong> 100 requests a day for the whole account and 5 a minute, the current season of every league, data up to 15 minutes old (live scores too), non-commercial use only, with a visible credit line "Data: SportStatsAPI" linking to https://sportstatsapi.com. Over a limit the API answers HTTP 429. Past seasons, line-ups, player stats, box scores, play-by-play and odds need a <a href="https://sportstatsapi.com/pricing/">paid plan</a> (from $79 a month for one sport). Cache what you fetch: a table changes a few times a day, not every minute.</aside>
+<h2 id="add-a-league">Add a league</h2>
+<p>Every page is generated from one entry in <code>leagues.json</code> (league code, sport, dates for the examples, a trimmed real response). Add an entry, run <code>python3 build.py</code>, and the page, its README and the sitemap are written.</p>
+<h2 id="links">Links</h2>
+<ul><li><a href="https://sportstatsapi.com/docs/api/">API reference</a> and <a href="https://sportstatsapi.com/docs/quickstart/">quickstart</a></li><li><a href="https://sportstatsapi.com/pricing/">Pricing</a>: Free, one sport, all sports</li><li><a href="https://account.sportstatsapi.com/signup">Free sign-up</a></li><li><a href="https://sportstatsapi.com/faq/">FAQ</a> and <a href="https://sportstatsapi.com/legal/terms/">terms</a>: what Free allows</li><li><a href="https://sportstatsapi.com/coverage/">All covered competitions</a></li></ul>
+<p>Code in this repository is MIT licensed. The API data is not: it is used under the SportStatsAPI <a href="https://sportstatsapi.com/legal/terms/">terms</a>.</p>
+</main>
+<footer><p><a href="https://sportstatsapi.com/">Data: SportStatsAPI</a> · Code MIT licensed · <a href="https://github.com/ownthegame/sportstatsapi-examples">Source on GitHub</a></p></footer>
+</body>
+</html>

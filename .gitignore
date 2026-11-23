@@ -1,0 +1,11 @@
+# script outputs (never commit API data)
+*.csv
+*.sqlite
+*.sqlite3
+*.db
+week.json
+out/
+# local
+.env
+__pycache__/
+.venv/

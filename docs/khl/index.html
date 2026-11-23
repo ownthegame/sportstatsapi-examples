@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KHL API – free JSON examples (Python, JavaScript, curl)</title>
+<meta name="description" content="KHL (Russia) API examples: fixtures, results, live scores and standings as JSON with curl, Python and JavaScript, league code l49c, plus a runnable script. Free key.">
+<link rel="canonical" href="https://ownthegame.github.io/sportstatsapi-examples/khl/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SportStatsAPI examples">
+<meta property="og:title" content="KHL API – free JSON examples (Python, JavaScript, curl)">
+<meta property="og:description" content="KHL (Russia) API examples: fixtures, results, live scores and standings as JSON with curl, Python and JavaScript, league code l49c, plus a runnable script. Free key.">
+<meta property="og:url" content="https://ownthegame.github.io/sportstatsapi-examples/khl/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><nav><a href="../">SportStatsAPI examples</a><span>/</span><span>KHL</span><span class="sp"></span><a href="https://sportstatsapi.com/docs/api/">API docs</a><a href="https://sportstatsapi.com/pricing/">Pricing</a><a class="btn" href="https://account.sportstatsapi.com/signup">Get a free key</a></nav></header>
+<main>
+<h1>KHL API – free JSON examples (Python, JavaScript, curl)</h1>
+<p>Kontinental Hockey League games, final scores by period, overtime and shootout results, live scores and the standings as JSON, with the same request shape as the NHL. The league spans many time zones, so read <code>start_at</code> (UTC) and convert it to the time zone you show.</p>
+<ul><li>League code: <code>l49c</code> (sport path <code>/hockey</code>)</li><li>Free plan: the current season. Paid plans: every season we store (results from 2026-04-02, box scores from 2026-09-05, as reported by the public coverage endpoint on 2026-11-23).</li><li>League page: <a href="https://sportstatsapi.com/coverage/hockey/russia/khl/">KHL data API on SportStatsAPI</a></li></ul>
+<h2 id="setup">Setup</h2>
+<p><a href="https://account.sportstatsapi.com/signup">Sign up free</a> (confirm the e-mail link), copy your key once, and keep it out of your code: put it in an environment variable. Call the API from a server or script, never from browser code, where anyone can read the key.</p>
+<figure class="code"><figcaption>Shell</figcaption><pre><code class="language-bash">export SSA_API_KEY=sk_live_your_key_here</code></pre></figure>
+<figure class="code"><figcaption>Python setup used below (pip install requests)</figcaption><pre><code class="language-python">import os
+import requests
+
+BASE = &quot;https://api.sportstatsapi.com/api/v1&quot;
+HEADERS = {&quot;Authorization&quot;: f&quot;Bearer {os.environ[&#x27;SSA_API_KEY&#x27;]}&quot;}</code></pre></figure>
+<p>The JavaScript snippets use the built-in <code>fetch</code> of Node 18+; save them as <code>.mjs</code> files so top-level <code>await</code> works.</p>
+<h2 id="fixtures-for-a-date-range">Fixtures for a date range</h2>
+<p>Upcoming KHL matches between two dates (inclusive, UTC). Without dates the list covers today only.</p>
+<figure class="code"><figcaption>curl</figcaption><pre><code class="language-bash">curl -s &quot;https://api.sportstatsapi.com/api/v1/hockey/matches?league_id=l49c&amp;date_from=2026-11-24&amp;date_to=2026-11-26&quot; \
+  -H &quot;Authorization: Bearer $SSA_API_KEY&quot;</code></pre></figure>
+<figure class="code"><figcaption>Python</figcaption><pre><code class="language-python">r = requests.get(f&quot;{BASE}/hockey/matches&quot;, headers=HEADERS, timeout=30,
+                 params={&quot;league_id&quot;: &quot;l49c&quot;, &quot;date_from&quot;: &quot;2026-11-24&quot;, &quot;date_to&quot;: &quot;2026-11-26&quot;})
+r.raise_for_status()
+for m in r.json()[&quot;data&quot;]:
+    print(m[&quot;start_at&quot;], m[&quot;home_team&quot;][&quot;name&quot;], &quot;vs&quot;, m[&quot;away_team&quot;][&quot;name&quot;])</code></pre></figure>
+<figure class="code"><figcaption>JavaScript</figcaption><pre><code class="language-javascript">const BASE = &quot;https://api.sportstatsapi.com/api/v1&quot;;
+const headers = { Authorization: `Bearer ${process.env.SSA_API_KEY}` };
+const q = new URLSearchParams({ league_id: &quot;l49c&quot;, date_from: &quot;2026-11-24&quot;, date_to: &quot;2026-11-26&quot; });
+const res = await fetch(`${BASE}/hockey/matches?${q}`, { headers });
+const { data } = await res.json();
+for (const m of data) console.log(m.start_at, m.home_team.name, &quot;vs&quot;, m.away_team.name);</code></pre></figure>
+<h2 id="results">Results</h2>
+<p>Finished matches, newest first. Keep the rows whose <code>status_code</code> starts with "final". <code>status_code</code> tells how a game ended: "final" (regulation), "final_overtime" or "final_penalties" (shootout). <code>periods</code> lists P1 to P3, then OT and SO when they were played. Take the final score from <code>home_team.score</code> and <code>away_team.score</code>: in a shootout game the SO entry may be the shootout tally, so the periods do not always add up to the final.</p>
+<figure class="code"><figcaption>curl</figcaption><pre><code class="language-bash">curl -s &quot;https://api.sportstatsapi.com/api/v1/hockey/matches?league_id=l49c&amp;date_from=2026-11-20&amp;date_to=2026-11-22&amp;order=desc&quot; \
+  -H &quot;Authorization: Bearer $SSA_API_KEY&quot;</code></pre></figure>
+<figure class="code"><figcaption>Python</figcaption><pre><code class="language-python">r = requests.get(f&quot;{BASE}/hockey/matches&quot;, headers=HEADERS, timeout=30,
+                 params={&quot;league_id&quot;: &quot;l49c&quot;, &quot;date_from&quot;: &quot;2026-11-20&quot;, &quot;date_to&quot;: &quot;2026-11-22&quot;, &quot;order&quot;: &quot;desc&quot;})
+for m in r.json()[&quot;data&quot;]:
+    if m[&quot;status_code&quot;].startswith(&quot;final&quot;):
+        h, a = m[&quot;home_team&quot;], m[&quot;away_team&quot;]
+        print(m[&quot;start_date&quot;], h[&quot;name&quot;], h[&quot;score&quot;], &quot;-&quot;, a[&quot;score&quot;], a[&quot;name&quot;], m[&quot;status_code&quot;])</code></pre></figure>
+<figure class="code"><figcaption>JavaScript</figcaption><pre><code class="language-javascript">const BASE = &quot;https://api.sportstatsapi.com/api/v1&quot;;
+const headers = { Authorization: `Bearer ${process.env.SSA_API_KEY}` };
+const q = new URLSearchParams({ league_id: &quot;l49c&quot;, date_from: &quot;2026-11-20&quot;, date_to: &quot;2026-11-22&quot;, order: &quot;desc&quot; });
+const { data } = await (await fetch(`${BASE}/hockey/matches?${q}`, { headers })).json();
+for (const m of data.filter((m) =&gt; m.status_code.startsWith(&quot;final&quot;))) {
+  console.log(m.start_date, m.home_team.name, m.home_team.score, &quot;-&quot;, m.away_team.score, m.away_team.name);
+}</code></pre></figure>
+<h2 id="live-scores">Live scores</h2>
+<p><code>/hockey/matches/live</code> returns every live ice hockey match of all leagues in one list, so filter on <code>league_code</code>. On the Free plan live scores are up to 15 minutes behind; poll once a minute at most (5 requests a minute is the Free cap).</p>
+<figure class="code"><figcaption>curl</figcaption><pre><code class="language-bash">curl -s &quot;https://api.sportstatsapi.com/api/v1/hockey/matches/live&quot; \
+  -H &quot;Authorization: Bearer $SSA_API_KEY&quot;</code></pre></figure>
+<figure class="code"><figcaption>Python</figcaption><pre><code class="language-python">r = requests.get(f&quot;{BASE}/hockey/matches/live&quot;, headers=HEADERS, timeout=30)
+live = [m for m in r.json()[&quot;data&quot;] if m[&quot;league_code&quot;] == &quot;l49c&quot;]
+for m in live:
+    print(m[&quot;status&quot;], m[&quot;home_team&quot;][&quot;name&quot;], m[&quot;home_team&quot;][&quot;score&quot;], &quot;-&quot;,
+          m[&quot;away_team&quot;][&quot;score&quot;], m[&quot;away_team&quot;][&quot;name&quot;])</code></pre></figure>
+<figure class="code"><figcaption>JavaScript</figcaption><pre><code class="language-javascript">const BASE = &quot;https://api.sportstatsapi.com/api/v1&quot;;
+const headers = { Authorization: `Bearer ${process.env.SSA_API_KEY}` };
+const { data } = await (await fetch(`${BASE}/hockey/matches/live`, { headers })).json();
+const live = data.filter((m) =&gt; m.league_code === &quot;l49c&quot;);
+for (const m of live) console.log(m.status, m.home_team.name, m.home_team.score, &quot;-&quot;, m.away_team.score, m.away_team.name);</code></pre></figure>
+<h2 id="standings">Standings</h2>
+<p>The current table in one request. The table is one list of groups: the two conferences first, then the four divisions, each with its teams. A row has position (<code>pos</code>), games played (<code>gp</code>), points (<code>pts</code>), the result columns <code>w</code>, <code>wo</code>, <code>l</code> and <code>lo</code>, goals in <code>points_for</code> and <code>points_against</code>, and a playoff note in <code>description</code>.</p>
+<figure class="code"><figcaption>curl</figcaption><pre><code class="language-bash">curl -s &quot;https://api.sportstatsapi.com/api/v1/hockey/leagues/l49c/standings&quot; \
+  -H &quot;Authorization: Bearer $SSA_API_KEY&quot;</code></pre></figure>
+<figure class="code"><figcaption>Python</figcaption><pre><code class="language-python">r = requests.get(f&quot;{BASE}/hockey/leagues/l49c/standings&quot;, headers=HEADERS, timeout=30)
+table = r.json()[&quot;data&quot;]
+for group in table[&quot;standings&quot;][&quot;category&quot;][&quot;league&quot;]:
+    for row in group[&quot;team&quot;]:
+        print(group[&quot;name&quot;], row[&quot;pos&quot;], row[&quot;name&quot;], row[&quot;pts&quot;], &quot;pts&quot;)</code></pre></figure>
+<figure class="code"><figcaption>JavaScript</figcaption><pre><code class="language-javascript">const BASE = &quot;https://api.sportstatsapi.com/api/v1&quot;;
+const headers = { Authorization: `Bearer ${process.env.SSA_API_KEY}` };
+const { data } = await (await fetch(`${BASE}/hockey/leagues/l49c/standings`, { headers })).json();
+for (const group of data.standings.category.league) {
+  for (const row of group.team) console.log(group.name, row.pos, row.name, row.pts, &quot;pts&quot;);
+}</code></pre></figure>
+<h2 id="real-response-trimmed">Real response, trimmed</h2>
+<p>One finished KHL match from <code>/hockey/matches</code> (fetched on the Free plan, most fields cut). Every answer wraps the result in <code>data</code>; lists also carry <code>meta.total</code>, <code>meta.limit</code> and <code>meta.offset</code>.</p>
+<figure class="code"><figcaption>JSON</figcaption><pre><code class="language-json">{
+  &quot;code&quot;: &quot;mo07p&quot;,
+  &quot;league_code&quot;: &quot;l49c&quot;,
+  &quot;status&quot;: &quot;After Penalties&quot;,
+  &quot;status_code&quot;: &quot;final_penalties&quot;,
+  &quot;start_at&quot;: &quot;2026-11-20T16:00:00Z&quot;,
+  &quot;home_team&quot;: {
+    &quot;code&quot;: &quot;tt9z&quot;,
+    &quot;name&quot;: &quot;Cherepovets&quot;,
+    &quot;score&quot;: 3
+  },
+  &quot;away_team&quot;: {
+    &quot;code&quot;: &quot;tt3c&quot;,
+    &quot;name&quot;: &quot;Khabarovsk&quot;,
+    &quot;score&quot;: 2
+  },
+  &quot;periods&quot;: [
+    {
+      &quot;period&quot;: &quot;1&quot;,
+      &quot;label&quot;: &quot;P1&quot;,
+      &quot;home&quot;: 1,
+      &quot;away&quot;: 1
+    },
+    {
+      &quot;period&quot;: &quot;2&quot;,
+      &quot;label&quot;: &quot;P2&quot;,
+      &quot;home&quot;: 0,
+      &quot;away&quot;: 1
+    },
+    {
+      &quot;period&quot;: &quot;3&quot;,
+      &quot;label&quot;: &quot;P3&quot;,
+      &quot;home&quot;: 1,
+      &quot;away&quot;: 0
+    },
+    {
+      &quot;period&quot;: &quot;OT&quot;,
+      &quot;label&quot;: &quot;OT&quot;,
+      &quot;home&quot;: 0,
+      &quot;away&quot;: 0
+    },
+    {
+      &quot;period&quot;: &quot;SO&quot;,
+      &quot;label&quot;: &quot;SO&quot;,
+      &quot;home&quot;: 2,
+      &quot;away&quot;: 1
+    }
+  ]
+}</code></pre></figure>
+<p>And the first row of the standings (structure kept, other rows cut):</p>
+<figure class="code"><figcaption>JSON</figcaption><pre><code class="language-json">{
+  &quot;league&quot;: [
+    {
+      &quot;name&quot;: &quot;Western Conference&quot;,
+      &quot;team&quot;: [
+        {
+          &quot;description&quot;: {
+            &quot;value&quot;: &quot;Promotion - KHL (Play Offs: 1/8-finals)&quot;
+          },
+          &quot;gp&quot;: &quot;29&quot;,
+          &quot;code&quot;: &quot;tt2v&quot;,
+          &quot;l&quot;: &quot;6&quot;,
+          &quot;lo&quot;: &quot;2&quot;,
+          &quot;name&quot;: &quot;CSKA Moscow&quot;,
+          &quot;display_name&quot;: &quot;CSKA Moscow&quot;,
+          &quot;points_against&quot;: &quot;53&quot;,
+          &quot;points_for&quot;: &quot;94&quot;,
+          &quot;pos&quot;: &quot;1&quot;,
+          &quot;pts&quot;: &quot;44&quot;,
+          &quot;recent_form&quot;: &quot;&quot;,
+          &quot;w&quot;: &quot;18&quot;,
+          &quot;wo&quot;: &quot;3&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></figure>
+<h2 id="paging-and-coverage">Paging and coverage</h2>
+<p><code>limit</code> goes up to 100 (default 50); use <code>offset</code> and <code>meta.total</code> to page through longer lists. What a league has (live scores, box scores, play-by-play, history) is public, no key needed:</p>
+<figure class="code"><figcaption>curl (no key)</figcaption><pre><code class="language-bash">curl -s https://api.sportstatsapi.com/api/v1/coverage/hockey/l49c</code></pre></figure>
+<h2 id="runnable-example-khl-results-with-ot-and-shootouts-to-csv">Runnable example: KHL results with OT and shootouts to CSV</h2>
+<p><a href="https://github.com/ownthegame/sportstatsapi-examples/blob/main/examples/khl/results_ot_so_csv.py">examples/khl/results_ot_so_csv.py</a>: Writes the finished KHL games of a date range (default: the last 3 days, UTC) as CSV with how each game was decided (REG, OT or SO) and the period scores. It is the NHL script with another league code: change <code>LEAGUE</code> to use it for any hockey league. Python 3.8+, standard library only.</p>
+<figure class="code"><figcaption>Run</figcaption><pre><code class="language-bash">cd examples/khl
+export SSA_API_KEY=sk_live_your_key_here
+python3 results_ot_so_csv.py --from 2026-11-20 --to 2026-11-22 &gt; khl-results.csv</code></pre></figure>
+<aside class="tip"><strong>Free plan limits.</strong> 100 requests a day for the whole account and 5 a minute, the current season of every league, data up to 15 minutes old (live scores too), non-commercial use only, with a visible credit line "Data: SportStatsAPI" linking to https://sportstatsapi.com. Over a limit the API answers HTTP 429. Past seasons, line-ups, player stats, box scores, play-by-play and odds need a <a href="https://sportstatsapi.com/pricing/">paid plan</a> (from $79 a month for one sport). Cache what you fetch: a table changes a few times a day, not every minute.</aside>
+<h2 id="links">Links</h2>
+<ul><li><a href="https://sportstatsapi.com/coverage/hockey/russia/khl/">KHL on SportStatsAPI</a>: coverage, data and plans for this league</li><li><a href="https://sportstatsapi.com/developers/free-ice-hockey-api/">Free ice hockey API</a></li><li><a href="https://sportstatsapi.com/docs/api/">API reference</a> and <a href="https://sportstatsapi.com/docs/quickstart/">quickstart</a></li><li><a href="https://sportstatsapi.com/pricing/">Pricing</a>: Free, one sport, all sports</li><li><a href="https://account.sportstatsapi.com/signup">Free sign-up</a></li><li><a href="https://sportstatsapi.com/faq/">FAQ</a> and <a href="https://sportstatsapi.com/legal/terms/">terms</a>: what Free allows</li><li><a href="https://sportstatsapi.com/coverage/">All covered competitions</a></li></ul>
+</main>
+<footer><p><a href="https://sportstatsapi.com/">Data: SportStatsAPI</a> · Code MIT licensed · <a href="https://github.com/ownthegame/sportstatsapi-examples">Source on GitHub</a></p></footer>
+</body>
+</html>

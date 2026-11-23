@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ownthegame.github.io/sportstatsapi-examples/sitemap.xml
