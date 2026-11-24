@@ -246,6 +246,7 @@ def page(title: str, desc: str, url: str, body: str, css: str, crumbs: str) -> s
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-site-verification" content="--YC6oyD16P7J92EvIpuj-CJdCvzZuZTfFQwmcQNudo">
 <title>{t}</title>
 <meta name="description" content="{d}">
 <link rel="canonical" href="{url}">
