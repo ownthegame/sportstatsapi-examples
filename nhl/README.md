@@ -288,7 +288,8 @@ python3 results_ot_so_csv.py --from 2026-11-20 --to 2026-11-22 > nhl-results.csv
 
 - [NHL on SportStatsAPI](https://sportstatsapi.com/coverage/hockey/usa/nhl/): coverage, data and plans for this league
 - [Free ice hockey API](https://sportstatsapi.com/developers/free-ice-hockey-api/)
-- [API reference](https://sportstatsapi.com/docs/api/) and [quickstart](https://sportstatsapi.com/docs/quickstart/)
+- [Quickstart](https://sportstatsapi.com/docs/quickstart/): first request in a few minutes, and the [API reference](https://sportstatsapi.com/docs/api/)
+- [Developer hub](https://sportstatsapi.com/developers/): free API pages per sport and an API comparison
 - [Pricing](https://sportstatsapi.com/pricing/): Free, one sport, all sports
 - [Free sign-up](https://account.sportstatsapi.com/signup)
 - [FAQ](https://sportstatsapi.com/faq/) and [terms](https://sportstatsapi.com/legal/terms/): what Free allows

@@ -49,7 +49,8 @@ Every page is generated from one entry in `leagues.json` (league code, sport, da
 
 ## Links
 
-- [API reference](https://sportstatsapi.com/docs/api/) and [quickstart](https://sportstatsapi.com/docs/quickstart/)
+- [Quickstart](https://sportstatsapi.com/docs/quickstart/): first request in a few minutes, and the [API reference](https://sportstatsapi.com/docs/api/)
+- [Developer hub](https://sportstatsapi.com/developers/): free API pages per sport and an API comparison
 - [Pricing](https://sportstatsapi.com/pricing/): Free, one sport, all sports
 - [Free sign-up](https://account.sportstatsapi.com/signup)
 - [FAQ](https://sportstatsapi.com/faq/) and [terms](https://sportstatsapi.com/legal/terms/): what Free allows

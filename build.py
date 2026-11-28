@@ -20,6 +20,7 @@ SIGNUP = "https://account.sportstatsapi.com/signup"
 FAQ = "https://sportstatsapi.com/faq/"
 TERMS = "https://sportstatsapi.com/legal/terms/"
 COVERAGE = "https://sportstatsapi.com/coverage/"
+DEVELOPERS = "https://sportstatsapi.com/developers/"
 
 FREE_TIP = (
     "100 requests a day for the whole account and 5 a minute, the current season of every league, "
@@ -195,7 +196,8 @@ def links_list(lg: dict | None = None) -> list:
         items.append(f"[{lg['name']} on SportStatsAPI]({lg['ssa_url']}): coverage, data and plans for this league")
         items.append(f"[Free {lg['sport_label']} API]({lg['sport_url']})")
     items += [
-        f"[API reference]({DOCS}) and [quickstart]({QUICKSTART})",
+        f"[Quickstart]({QUICKSTART}): first request in a few minutes, and the [API reference]({DOCS})",
+        f"[Developer hub]({DEVELOPERS}): free API pages per sport and an API comparison",
         f"[Pricing]({PRICING}): Free, one sport, all sports",
         f"[Free sign-up]({SIGNUP})",
         f"[FAQ]({FAQ}) and [terms]({TERMS}): what Free allows",
